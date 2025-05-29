@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bible English Fun - LOTW Lesson A1-17</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        header {
+            background-color: #4682b4;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .game-container {
+            display: none;
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin: 30px auto;
+            max-width: 850px;
+        }
+        
+        /* Enhanced Menu Styles */
+        #menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            max-width: 900px;
+            margin: 0 auto 30px;
+        }
+        
+        .menu-row {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            width: 100%;
+        }
+        
+        .game-btn {
+            background-image: linear-gradient(135deg, #56ab2f, #a8e063);
+            color: white;
+            border: none;
+            padding: 20px 30px;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 120px;
+        }
+
+        .game-btn:hover {
+            background-image: linear-gradient(135deg, #a8e063, #56ab2f);
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        
+        .game-btn i {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        /* Rest of your existing styles... */
+        .preposition-option {
+            background-color: #e6f2ff;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 8px;
+            display: inline-block;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .preposition-option:hover {
+            background-color: #cce0ff;
+        }
+        .commandment-card {
+            background-color: #fffacd;
+            padding: 15px;
+            margin: 10px 5px;
+            border-radius: 10px;
+            cursor: move;
+            display: inline-block;
+            width: 150px;
+            text-align: center;
+            border: 2px solid transparent;
+        }
+        .commandment-card.correct-placement {
+            border: 2px solid green;
+        }
+        .commandment-card.incorrect-placement {
+            border: 2px solid red;
+        }
+        .basket {
+            background-color: #98fb98;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 10px;
+            min-height: 100px;
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .vocab-tile {
+            width: 100px;
+            height: 100px;
+            background-color: #ffd700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .vocab-tile:hover {
+            transform: scale(1.05);
+        }
+        .feedback {
+            font-size: 20px;
+            margin: 15px;
+            min-height: 30px;
+            font-weight: bold;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+        .missing-word {
+            display: inline-block;
+            width: auto;
+            min-width: 90px;
+            height: auto;
+            min-height: 28px;
+            border-bottom: 2px solid #333;
+            margin: 0 5px;
+            padding: 0 8px;
+            vertical-align: middle;
+            text-align: center;
+            line-height: 28px;
+            font-weight: bold;
+            color: #333;
+        }
+        .missing-word.correct-drop {
+            color: green;
+            border-bottom: 2px solid green;
+        }
+        .missing-word.incorrect-drop {
+            color: red;
+            border-bottom: 2px solid red;
+        }
+        .nav-btn {
+            background-color: #4682b4;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin: 10px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 16px;
+        }
+        .nav-btn:hover {
+            background-color: #3572a0;
+        }
+        #commandmentOptionsContainer {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            min-height: 60px;
+        }
+        #prepositionSentences p {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        #audioControls {
+            margin: 25px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+        #volumeControl {
+            width: 120px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .menu-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .game-btn {
+                min-width: auto;
+                width: 100%;
+                height: 100px;
+                padding: 15px;
+                font-size: 18px;
+            }
+            
+            #menu {
+                gap: 15px;
+            }
+        }
+    </style>
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>Bible English Fun</h1>
+        <h2>LOTW Lesson #A1-17</h2>
+    </header>
+
+    <div id="menu">
+        <div class="menu-row">
+            <button class="game-btn" onclick="showGame('prepositions')">
+                <i class="fas fa-map-marker-alt"></i>
+                Where Is It?<br>(Prepositions)
+            </button>
+            <button class="game-btn" onclick="showGame('commandments')">
+                <i class="fas fa-tablets"></i>
+                Ten Commandments Sort
+            </button>
+        </div>
+        <div class="menu-row">
+            <button class="game-btn" onclick="showGame('vocabulary')">
+                <i class="fas fa-volume-up"></i>
+                Listen & Tap Vocabulary
+            </button>
+        </div>
+    </div>
+
+    <!-- Game 1: Prepositions -->
+    <div id="prepositions" class="game-container">
+        <!-- ... (rest of your existing game containers) ... -->
+        <h2>Where Is It?</h2>
+        <p>Drag the correct preposition to complete each sentence!</p>
+        
+        <div style="margin: 20px;" id="prepositionSentences">
+            <p>1. The dog is <span class="missing-word" id="prepBlank1" ondrop="dropPreposition(event)" ondragover="allowDrop(event)" data-correct="beside"></span> the man.</p>
+            <p>2. The food is <span class="missing-word" id="prepBlank2" ondrop="dropPreposition(event)" ondragover="allowDrop(event)" data-correct="on"></span> the blanket.</p>
+            <p>3. The tree is <span class="missing-word" id="prepBlank3" ondrop="dropPreposition(event)" ondragover="allowDrop(event)" data-correct="behind"></span> the woman.</p>
+            <p>4. The bird is singing <span class="missing-word" id="prepBlank4" ondrop="dropPreposition(event)" ondragover="allowDrop(event)" data-correct="in"></span> its cage.</p>
+            <p>5. The chandelier hangs <span class="missing-word" id="prepBlank5" ondrop="dropPreposition(event)" ondragover="allowDrop(event)" data-correct="above"></span> the dining table.</p>
+            <p>6. The cat is sleeping <span class="missing-word" id="prepBlank6" ondrop="dropPreposition(event)" ondragover="allowDrop(event)" data-correct="under"></span> the chair.</p>
+            <p>7. The flowers are planted <span class="missing-word" id="prepBlank7" ondrop="dropPreposition(event)" ondragover="allowDrop(event)" data-correct="near"></span> the fence.</p>
+            <p>8. The path goes <span class="missing-word" id="prepBlank8" ondrop="dropPreposition(event)" ondragover="allowDrop(event)" data-correct="through"></span> the forest.</p>
+            <p>9. She stood <span class="missing-word" id="prepBlank9" ondrop="dropPreposition(event)" ondragover="allowDrop(event)" data-correct="among"></span> the crowd.</p>
+            <p>10. The bridge goes <span class="missing-word" id="prepBlank10" ondrop="dropPreposition(event)" ondragover="allowDrop(event)" data-correct="over"></span> the river.</p>
+        </div>
+        
+        <div style="margin-top: 20px; padding: 10px; background-color: #f0f0f0; border-radius: 8px;" id="prepositionOptionsContainer">
+            <div class="preposition-option" draggable="true" ondragstart="drag(event)" id="on">on</div>
+            <div class="preposition-option" draggable="true" ondragstart="drag(event)" id="beside">beside</div>
+            <div class="preposition-option" draggable="true" ondragstart="drag(event)" id="behind">behind</div>
+            <div class="preposition-option" draggable="true" ondragstart="drag(event)" id="in">in</div>
+            <div class="preposition-option" draggable="true" ondragstart="drag(event)" id="above">above</div>
+            <div class="preposition-option" draggable="true" ondragstart="drag(event)" id="under">under</div>
+            <div class="preposition-option" draggable="true" ondragstart="drag(event)" id="near">near</div>
+            <div class="preposition-option" draggable="true" ondragstart="drag(event)" id="through">through</div>
+            <div class="preposition-option" draggable="true" ondragstart="drag(event)" id="among">among</div>
+            <div class="preposition-option" draggable="true" ondragstart="drag(event)" id="over">over</div>
+            <div class="preposition-option" draggable="true" ondragstart="drag(event)" id="between">between</div>
+            <div class="preposition-option" draggable="true" ondragstart="drag(event)" id="far">far</div>
+        </div>
+        
+        <div class="feedback" id="prepFeedback"></div>
+        <button class="nav-btn" onclick="checkPrepositions()">Check Answers</button>
+        <button class="nav-btn" onclick="resetPrepositions()">Reset</button>
+        <button class="nav-btn" onclick="hideAllGames()">Back to Menu</button>
+    </div>
+
+    <!-- Game 2: Commandments Sort -->
+    <div id="commandments" class="game-container">
+        <h2>Ten Commandments Sort</h2>
+        <p>Drag each commandment to the correct basket!</p>
+        
+        <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
+            <div class="basket" id="loveGod" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <h3>Love God</h3>
+            </div>
+            <div class="basket" id="lovePeople" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <h3>Love People</h3>
+            </div>
+        </div>
+        
+        <div id="commandmentOptionsContainer">
+            <div class="commandment-card" draggable="true" ondragstart="drag(event)" id="cmd1" data-category="loveGod">Do not have other gods</div>
+            <div class="commandment-card" draggable="true" ondragstart="drag(event)" id="cmd2" data-category="loveGod">Do not make idols</div>
+            <div class="commandment-card" draggable="true" ondragstart="drag(event)" id="cmd3" data-category="loveGod">Do not misuse God's name</div>
+            <div class="commandment-card" draggable="true" ondragstart="drag(event)" id="cmd4" data-category="loveGod">Keep Sabbath holy</div>
+            <div class="commandment-card" draggable="true" ondragstart="drag(event)" id="cmd5" data-category="lovePeople">Love your parents</div>
+            <div class="commandment-card" draggable="true" ondragstart="drag(event)" id="cmd6" data-category="lovePeople">Do not murder</div>
+            <div class="commandment-card" draggable="true" ondragstart="drag(event)" id="cmd7" data-category="lovePeople">Do not do sex sins</div>
+            <div class="commandment-card" draggable="true" ondragstart="drag(event)" id="cmd8" data-category="lovePeople">Do not steal</div>
+            <div class="commandment-card" draggable="true" ondragstart="drag(event)" id="cmd9" data-category="lovePeople">Do not tell lies</div>
+            <div class="commandment-card" draggable="true" ondragstart="drag(event)" id="cmd10" data-category="lovePeople">Do not covet</div>
+        </div>
+        
+        <div class="feedback" id="cmdFeedback"></div>
+        <button class="nav-btn" onclick="checkCommandments()">Check Answers</button>
+        <button class="nav-btn" onclick="resetCommandments()">Reset</button>
+        <button class="nav-btn" onclick="hideAllGames()">Back to Menu</button>
+    </div>
+
+    <!-- Game 3: Vocabulary -->
+    <div id="vocabulary" class="game-container">
+        <h2>Listen & Tap Vocabulary</h2>
+        <p>Listen to the word, then tap the matching tile!</p>
+        
+        <div id="audioControls">
+            <button class="nav-btn" onclick="playVocabularyWord()">
+                <i class="fas fa-play"></i> Play Word
+            </button>
+            <button class="nav-btn" onclick="repeatVocabularyWord()">
+                <i class="fas fa-redo"></i> Repeat
+            </button>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-volume-up"></i>
+                <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="0.7" onchange="setVolume()">
+            </div>
+        </div>
+        
+        <audio id="vocabAudio" preload="auto"></audio>
+        
+        <div>
+            <div class="vocab-tile" onclick="checkVocab('laws')">LAWS</div>
+            <div class="vocab-tile" onclick="checkVocab('love')">LOVE</div>
+            <div class="vocab-tile" onclick="checkVocab('holy')">HOLY</div>
+            <div class="vocab-tile" onclick="checkVocab('land')">LAND</div>
+            <div class="vocab-tile" onclick="checkVocab('help')">HELP</div>
+            <div class="vocab-tile" onclick="checkVocab('Lord')">LORD</div>
+        </div>
+        
+        <div class="feedback" id="vocabFeedback"></div>
+        <button class="nav-btn" onclick="hideAllGames()">Back to Menu</button>
+    </div>
+
+    <script>
+        let currentVocabWord = '';
+        const vocabWords = ['laws', 'love', 'holy', 'land', 'help', 'Lord'];
+        const vocabAudioFiles = { 
+            'laws': 'https://ssl.gstatic.com/dictionary/static/sounds/20200429/law--_gb_1.mp3',
+            'love': 'https://ssl.gstatic.com/dictionary/static/sounds/20200429/love--_gb_1.mp3',
+            'holy': 'https://ssl.gstatic.com/dictionary/static/sounds/20200429/holy--_gb_1.mp3',
+            'land': 'https://ssl.gstatic.com/dictionary/static/sounds/20200429/land--_gb_1.mp3',
+            'help': 'https://ssl.gstatic.com/dictionary/static/sounds/20200429/help--_gb_1.mp3',
+            'Lord': 'https://ssl.gstatic.com/dictionary/static/sounds/20200429/lord--_gb_1.mp3'
+        };
+        
+        // Initialize the game
+        document.addEventListener('DOMContentLoaded', function() {
+            hideAllGames();
+            setVolume();
+            preloadAudio();
+        });
+
+        function showGame(gameId) {
+            hideAllGames();
+            document.getElementById(gameId).style.display = 'block';
+            if (gameId === 'prepositions') resetPrepositions();
+            if (gameId === 'commandments') resetCommandments();
+            if (gameId === 'vocabulary') {
+                document.getElementById('vocabFeedback').innerHTML = "";
+            }
+        }
+        
+        function hideAllGames() {
+            const games = document.querySelectorAll('.game-container');
+            games.forEach(game => game.style.display = 'none');
+        }
+        
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+        
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+        
+        function dropPreposition(ev) {
+            ev.preventDefault();
+            const prepositionId = ev.dataTransfer.getData("text");
+            const blankElement = ev.target;
+
+            if (!blankElement.classList.contains('missing-word')) return;
+
+            blankElement.classList.remove('correct-drop', 'incorrect-drop');
+            blankElement.style.color = '#333'; 
+            blankElement.style.borderBottom = '2px solid #333';
+
+            const prepositionText = document.getElementById(prepositionId).textContent;
+            blankElement.textContent = prepositionText;
+            blankElement.dataset.droppedPrepositionId = prepositionId; 
+        }
+        
+        function checkPrepositions() {
+            const blanks = [
+                document.getElementById('prepBlank1'), document.getElementById('prepBlank2'),
+                document.getElementById('prepBlank3'), document.getElementById('prepBlank4'),
+                document.getElementById('prepBlank5'), document.getElementById('prepBlank6'),
+                document.getElementById('prepBlank7'), document.getElementById('prepBlank8'),
+                document.getElementById('prepBlank9'), document.getElementById('prepBlank10')
+            ];
+            let allCorrectOverall = true;
+            let filledBlanksCount = 0;
+            const blankStatuses = []; 
+
+            blanks.forEach(blank => {
+                const droppedPrepositionId = blank.dataset.droppedPrepositionId;
+                const correctPreposition = blank.dataset.correct;
+                let currentStatus = 'empty';
+
+                if (droppedPrepositionId) {
+                    filledBlanksCount++;
+                    if (document.getElementById(droppedPrepositionId).textContent.toLowerCase() === correctPreposition.toLowerCase()) {
+                        currentStatus = 'correct';
+                    } else {
+                        currentStatus = 'incorrect';
+                        allCorrectOverall = false;
+                    }
+                } else {
+                    allCorrectOverall = false; 
+                }
+                blankStatuses.push({element: blank, status: currentStatus});
+            });
+
+            const prepFeedback = document.getElementById('prepFeedback');
+            if (allCorrectOverall && filledBlanksCount === blanks.length) {
+                prepFeedback.innerHTML = "Excellent! All prepositions are correct!";
+                prepFeedback.className = "feedback correct";
+                playSuccessSound();
+            } else if (filledBlanksCount < blanks.length) {
+                prepFeedback.innerHTML = "Please fill all the blanks.";
+                prepFeedback.className = "feedback incorrect";
+                playErrorSound();
+            } else { 
+                prepFeedback.innerHTML = "Some prepositions are incorrect. Try again!";
+                prepFeedback.className = "feedback incorrect";
+                playErrorSound();
+            }
+
+            blankStatuses.forEach(item => {
+                item.element.classList.remove('correct-drop', 'incorrect-drop');
+                item.element.style.color = ''; 
+                item.element.style.borderBottom = ''; 
+
+                if (item.status === 'correct') {
+                    item.element.classList.add('correct-drop');
+                } else if (item.status === 'incorrect') {
+                    item.element.classList.add('incorrect-drop');
+                } else { 
+                    item.element.style.color = '#333'; 
+                    item.element.style.borderBottom = '2px solid #333';
+                    if (!item.element.dataset.droppedPrepositionId) item.element.textContent = '';
+                }
+            });
+        }
+
+        function resetPrepositions() {
+            const blanks = [
+                document.getElementById('prepBlank1'), document.getElementById('prepBlank2'),
+                document.getElementById('prepBlank3'), document.getElementById('prepBlank4'),
+                document.getElementById('prepBlank5'), document.getElementById('prepBlank6'),
+                document.getElementById('prepBlank7'), document.getElementById('prepBlank8'),
+                document.getElementById('prepBlank9'), document.getElementById('prepBlank10')
+            ];
+            blanks.forEach(blank => {
+                blank.textContent = ''; 
+                delete blank.dataset.droppedPrepositionId; 
+                blank.classList.remove('correct-drop', 'incorrect-drop');
+                blank.style.color = '#333'; 
+                blank.style.borderBottom = '2px solid #333';
+            });
+            document.getElementById('prepFeedback').innerHTML = "";
+            document.getElementById('prepFeedback').className = "feedback";
+        }
+        
+        function drop(ev) { 
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const draggedElement = document.getElementById(data);
+            draggedElement.classList.remove('correct-placement', 'incorrect-placement');
+
+            let targetBasket = ev.target;
+            while(targetBasket && !targetBasket.classList.contains('basket') && targetBasket !== document.body) {
+                targetBasket = targetBasket.parentElement;
+            }
+
+            if (targetBasket && targetBasket.classList.contains('basket') && draggedElement && draggedElement.classList.contains('commandment-card')) {
+                 targetBasket.appendChild(draggedElement);
+            } else if (ev.target.id === 'commandmentOptionsContainer' && draggedElement && draggedElement.classList.contains('commandment-card')) {
+                 ev.target.appendChild(draggedElement);
+            }
+        }
+
+        function checkCommandments() {
+            const loveGodBasket = document.getElementById('loveGod');
+            const lovePeopleBasket = document.getElementById('lovePeople');
+            const cmdFeedback = document.getElementById('cmdFeedback');
+            const initialCommandmentsContainer = document.getElementById('commandmentOptionsContainer');
+            
+            let overallCorrect = true;
+            let unsortedCardsExist = false;
+            const cardStatuses = [];
+
+            loveGodBasket.querySelectorAll('.commandment-card').forEach(card => {
+                const isCorrect = card.dataset.category === 'loveGod';
+                cardStatuses.push({element: card, status: isCorrect ? 'correct' : 'incorrect'});
+                if (!isCorrect) overallCorrect = false;
+            });
+
+            lovePeopleBasket.querySelectorAll('.commandment-card').forEach(card => {
+                const isCorrect = card.dataset.category === 'lovePeople';
+                cardStatuses.push({element: card, status: isCorrect ? 'correct' : 'incorrect'});
+                if (!isCorrect) overallCorrect = false;
+            });
+            
+            initialCommandmentsContainer.querySelectorAll('.commandment-card').forEach(card => {
+                unsortedCardsExist = true;
+                overallCorrect = false; 
+                cardStatuses.push({element: card, status: 'unsorted'}); 
+            });
+
+            if (unsortedCardsExist) {
+                cmdFeedback.innerHTML = "Don't forget to sort all the commandments!";
+                cmdFeedback.className = "feedback incorrect";
+                playErrorSound();
+            } else if (!overallCorrect) {
+                cmdFeedback.innerHTML = "Hmm, check the baskets again. Some commandments might be in the wrong one.";
+                cmdFeedback.className = "feedback incorrect";
+                playErrorSound();
+            } else {
+                cmdFeedback.innerHTML = "Great sorting! You know how to love God and love people!";
+                cmdFeedback.className = "feedback correct";
+                playSuccessSound();
+            }
+
+            cardStatuses.forEach(item => {
+                item.element.classList.remove('correct-placement', 'incorrect-placement');
+                if (item.status === 'correct') {
+                    item.element.classList.add('correct-placement');
+                } else if (item.status === 'incorrect') {
+                    item.element.classList.add('incorrect-placement');
+                }
+            });
+        }
+
+        function resetCommandments() {
+            const loveGodBasket = document.getElementById('loveGod');
+            const lovePeopleBasket = document.getElementById('lovePeople');
+            const commandmentOptionsContainer = document.getElementById('commandmentOptionsContainer');
+
+            commandmentOptionsContainer.ondrop = drop;
+            commandmentOptionsContainer.ondragover = allowDrop;
+
+            const cardsToMove = [];
+            loveGodBasket.querySelectorAll('.commandment-card').forEach(card => cardsToMove.push(card));
+            lovePeopleBasket.querySelectorAll('.commandment-card').forEach(card => cardsToMove.push(card));
+            
+            cardsToMove.forEach(card => {
+                card.classList.remove('correct-placement', 'incorrect-placement');
+                commandmentOptionsContainer.appendChild(card);
+            });
+            
+            document.getElementById('cmdFeedback').innerHTML = "";
+            document.getElementById('cmdFeedback').className = "feedback";
+            shuffleChildren(commandmentOptionsContainer);
+        }
+
+        function shuffleChildren(parent) {
+            let children = Array.from(parent.children);
+            let itemsToShuffle = children.filter(child => child.classList.contains('commandment-card'));
+            let otherItems = children.filter(child => !child.classList.contains('commandment-card')); 
+            
+            for (let i = itemsToShuffle.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [itemsToShuffle[i], itemsToShuffle[j]] = [itemsToShuffle[j], itemsToShuffle[i]];
+            }
+            parent.innerHTML = '';
+            otherItems.forEach(child => parent.appendChild(child));
+            itemsToShuffle.forEach(child => parent.appendChild(child));
+        }
+        
+        function preloadAudio() {
+            Object.values(vocabAudioFiles).forEach(audioFile => {
+                const audio = new Audio();
+                audio.src = audioFile;
+                audio.preload = 'auto';
+            });
+        }
+        
+        function playVocabularyWord() {
+            const vocabFeedback = document.getElementById('vocabFeedback');
+            if (vocabWords.length === 0) {
+                vocabFeedback.innerHTML = "No words to play.";
+                vocabFeedback.className = "feedback";
+                return;
+            }
+            
+            const randomIndex = Math.floor(Math.random() * vocabWords.length);
+            currentVocabWord = vocabWords[randomIndex];
+            const audioPlayer = document.getElementById('vocabAudio');
+            
+            audioPlayer.src = vocabAudioFiles[currentVocabWord];
+            audioPlayer.currentTime = 0;
+            
+            audioPlayer.onerror = function() {
+                vocabFeedback.innerHTML = "Error loading audio. Please try again.";
+                vocabFeedback.className = "feedback incorrect";
+            };
+            
+            audioPlayer.oncanplaythrough = function() {
+                const playPromise = audioPlayer.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        vocabFeedback.innerHTML = "Listen to the word...";
+                        vocabFeedback.className = "feedback";
+                    })
+                    .catch(error => {
+                        vocabFeedback.innerHTML = "Could not play audio. Please click the play button again.";
+                        vocabFeedback.className = "feedback incorrect";
+                        console.error("Audio play failed:", error);
+                    });
+                }
+            };
+            
+            audioPlayer.load();
+        }
+        
+        function repeatVocabularyWord() {
+            if (!currentVocabWord) {
+                document.getElementById('vocabFeedback').innerHTML = "Play a word first!";
+                document.getElementById('vocabFeedback').className = "feedback incorrect";
+                return;
+            }
+            
+            const audioPlayer = document.getElementById('vocabAudio');
+            audioPlayer.currentTime = 0;
+            audioPlayer.play().catch(e => console.log("Repeat failed:", e));
+        }
+        
+        function checkVocab(word) {
+            const vocabFeedback = document.getElementById('vocabFeedback');
+            if (!currentVocabWord) { 
+                vocabFeedback.innerHTML = "Click 'Play Word' first!";
+                vocabFeedback.className = "feedback incorrect";
+                playErrorSound();
+                return;
+            }
+            
+            if (word === currentVocabWord) {
+                vocabFeedback.innerHTML = "Correct! " + word.toUpperCase() + "!";
+                vocabFeedback.className = "feedback correct";
+                playSuccessSound();
+                setTimeout(playVocabularyWord, 2000);
+            } else {
+                vocabFeedback.innerHTML = "Try again! Listen carefully!";
+                vocabFeedback.className = "feedback incorrect";
+                playErrorSound();
+            }
+        }
+        
+        function setVolume() {
+            const volume = document.getElementById('volumeControl').value;
+            document.getElementById('vocabAudio').volume = volume;
+        }
+        
+        function playSuccessSound() {
+            const successAudio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3');
+            successAudio.volume = document.getElementById('volumeControl').value;
+            successAudio.play().catch(e => console.log("Couldn't play success sound:", e));
+        }
+        
+        function playErrorSound() {
+            const errorAudio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3');
+            errorAudio.volume = document.getElementById('volumeControl').value;
+            errorAudio.play().catch(e => console.log("Couldn't play error sound:", e));
+        }
+    </script>
+</body>
+</html>
