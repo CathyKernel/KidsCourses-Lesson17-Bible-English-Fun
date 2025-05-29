@@ -45,8 +45,3 @@ An interactive web-based English learning game focused on biblical vocabulary an
 ## Installation
 
 No installation required! This is a client-side web application that runs directly in the browser.
-
-To run locally:
-1. Clone this repository
-   ```bash
-   git clone https://github.com/yourusername/bible-english-fun.git
