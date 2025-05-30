@@ -708,7 +708,7 @@
             <div class="progress-bar" id="progressBar"></div>
         </div>
         
-        <div>
+        <div id="vocabTileContainer"> <!-- Added ID here -->
             <div class="vocab-tile" onclick="checkVocab('laws')">LAWS</div>
             <div class="vocab-tile" onclick="checkVocab('love')">LOVE</div>
             <div class="vocab-tile" onclick="checkVocab('holy')">HOLY</div>
@@ -718,13 +718,24 @@
         </div>
         
         <div class="game-stats">
-            <div class="stat-box">Correct: <span id="correctCount">0</span></div>
-            <div class="stat-box">Incorrect: <span id="incorrectCount">0</span></div>
             <div class="stat-box">Completed: <span id="completedWords">0</span>/6</div>
         </div>
         
         <div class="feedback" id="vocabFeedback"></div>
-        <button class="nav-btn" onclick="returnToMenu()"><i class="fas fa-home"></i> Back to Menu</button>
+
+        <!-- Vocabulary Game Summary -->
+        <div id="vocabSummary" style="display: none; text-align: center; padding: 20px;">
+            <h3 id="vocabSummaryTitle" style="font-size: 2rem; color: #3a7bd5; margin-bottom: 15px;">Well Done!</h3>
+            <p id="vocabSummaryMessage" style="font-size: 1.3rem; margin: 20px 0; line-height: 1.6;"></p>
+            <button class="nav-btn" onclick="resetVocabularyAndRestart()">
+                <i class="fas fa-redo"></i> Play Again
+            </button>
+            <button class="nav-btn" onclick="returnToMenu()">
+                <i class="fas fa-home"></i> Back to Menu
+            </button>
+        </div>
+
+        <button class="nav-btn" onclick="returnToMenu()" id="vocabBackToMenuBtn"><i class="fas fa-home"></i> Back to Menu</button>
     </div>
 
     <script>
@@ -733,14 +744,11 @@
         let currentVocabIndex = 0;
         let vocabAudios = {};
         let isPlaying = false;
-        let correctCount = 0;
-        let incorrectCount = 0;
         let vocabScore = 0;
-        let completedWords = 0;
+        let completedWords = 0; 
         let completedWordFlags = new Array(vocabWords.length).fill(false);
-        let isProcessing = false;
+        let isProcessing = false; 
 
-        // Audio preloading
         const audioFiles = {
             'laws': 'https://ssl.gstatic.com/dictionary/static/sounds/20200429/law--_gb_1.mp3',
             'love': 'https://ssl.gstatic.com/dictionary/static/sounds/20200429/love--_gb_1.mp3',
@@ -752,7 +760,6 @@
             'error': 'https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3'
         };
 
-        // Initialize the game
         document.addEventListener('DOMContentLoaded', function() {
             hideAllGames();
             preloadAudio();
@@ -760,7 +767,6 @@
             updateWordInfo();
             updateProgressBar();
             
-            // Load volume from localStorage if available
             const savedVolume = localStorage.getItem('vocabVolume');
             if (savedVolume !== null) {
                 document.getElementById('volumeControl').value = savedVolume;
@@ -779,13 +785,31 @@
                 document.getElementById('cmdScore').textContent = cmdScore;
             }
             if (gameId === 'vocabulary') {
-                document.getElementById('vocabFeedback').innerHTML = "";
                 document.getElementById('vocabScore').textContent = vocabScore;
-                document.getElementById('correctCount').textContent = correctCount;
-                document.getElementById('incorrectCount').textContent = incorrectCount;
-                document.getElementById('completedWords').textContent = completedWords;
+                document.getElementById('completedWords').textContent = `${completedWords}/${vocabWords.length}`;
                 updateWordInfo();
                 updateProgressBar();
+
+                if (completedWords === vocabWords.length && vocabWords.length > 0) { // Game was already completed
+                    showVocabularySummary();
+                } else {
+                    // Show game elements, hide summary
+                    document.getElementById('vocabSummary').style.display = 'none';
+                    document.getElementById('audioControls').style.display = 'flex';
+                    document.querySelector('#vocabulary .progress-container').style.display = 'block';
+                    document.getElementById('vocabTileContainer').style.display = 'block';
+                    document.getElementById('vocabFeedback').style.display = 'block';
+                    document.getElementById('vocabFeedback').innerHTML = "";
+                    document.querySelector('#vocabulary .game-stats').style.display = 'flex';
+                    document.getElementById('vocabBackToMenuBtn').style.display = 'inline-block';
+
+
+                    document.querySelectorAll('.vocab-tile').forEach(tile => {
+                        tile.style.pointerEvents = 'auto'; 
+                        tile.classList.remove('correct', 'incorrect'); 
+                    });
+                    isProcessing = false; 
+                }
             }
         }
         
@@ -796,10 +820,9 @@
         }
         
         function returnToMenu() {
-            // Reset all games when returning to menu
             resetPrepositions();
             resetCommandments();
-            resetVocabulary();
+            resetVocabulary(); 
             hideAllGames();
         }
         
@@ -1019,37 +1042,42 @@
         
         function resetVocabulary() {
             currentVocabIndex = 0;
-            correctCount = 0;
-            incorrectCount = 0;
             vocabScore = 0;
             completedWords = 0;
             completedWordFlags = new Array(vocabWords.length).fill(false);
             isProcessing = false;
             
-            // Stop any playing audio
             Object.values(vocabAudios).forEach(audio => {
                 audio.pause();
                 audio.currentTime = 0;
             });
+
+            // Hide summary, show game elements
+            document.getElementById('vocabSummary').style.display = 'none';
+            document.getElementById('audioControls').style.display = 'flex';
+            document.querySelector('#vocabulary .progress-container').style.display = 'block';
+            document.getElementById('vocabTileContainer').style.display = 'block';
+            document.getElementById('vocabFeedback').style.display = 'block';
+            document.getElementById('vocabFeedback').innerHTML = "";
+            document.getElementById('vocabFeedback').className = "feedback";
+            document.querySelector('#vocabulary .game-stats').style.display = 'flex';
+            document.getElementById('vocabBackToMenuBtn').style.display = 'inline-block';
             
-            // Clear feedback
-            const feedback = document.getElementById('vocabFeedback');
-            feedback.innerHTML = "";
-            feedback.className = "feedback";
-            
-            // Reset UI elements
             document.getElementById('vocabScore').textContent = "0";
-            document.getElementById('correctCount').textContent = "0";
-            document.getElementById('incorrectCount').textContent = "0";
-            document.getElementById('completedWords').textContent = "0";
+            document.getElementById('completedWords').textContent = `0/${vocabWords.length}`;
             
-            // Reset tile styles
             document.querySelectorAll('.vocab-tile').forEach(tile => {
                 tile.classList.remove('correct', 'incorrect');
+                tile.style.pointerEvents = 'auto'; 
             });
             
             updateWordInfo();
             updateProgressBar();
+        }
+
+        function resetVocabularyAndRestart() {
+            resetVocabulary();
+            // playCurrentWord(); // Optional: auto-play first word
         }
         
         function preloadAudio() {
@@ -1084,12 +1112,10 @@
             const word = vocabWords[currentVocabIndex];
             if (!vocabAudios[word]) return;
             
-            // Only play if not already playing or if forced repeat
             if (!isPlaying || force) {
                 isPlaying = true;
                 vocabAudios[word].currentTime = 0;
                 
-                // Update button to show loading state
                 const playBtn = document.getElementById('playBtn');
                 const originalHtml = playBtn.innerHTML;
                 playBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading';
@@ -1099,55 +1125,65 @@
                 
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
-                        // Audio started successfully
                         playBtn.innerHTML = '<i class="fas fa-play"></i> Play';
                         playBtn.disabled = false;
                     }).catch(error => {
                         document.getElementById('vocabFeedback').innerHTML = 
                             "Playback failed. Click play again.";
                         document.getElementById('vocabFeedback').className = "feedback incorrect";
-                        playBtn.innerHTML = originalHtml;
+                        playBtn.innerHTML = originalHtml; 
                         playBtn.disabled = false;
                     }).finally(() => {
                         isPlaying = false;
                     });
+                } else {
+                    isPlaying = false;
+                    playBtn.innerHTML = originalHtml;
+                    playBtn.disabled = false;
                 }
             }
         }
 
         function playNextWord() {
+            if (completedWords === vocabWords.length) return; // Don't advance if game is over
+
             currentVocabIndex = (currentVocabIndex + 1) % vocabWords.length;
             updateWordInfo();
             
-            // Clear feedback when changing words
             const feedback = document.getElementById('vocabFeedback');
             feedback.innerHTML = "";
             feedback.className = "feedback";
             
-            // Reset tile styles
             document.querySelectorAll('.vocab-tile').forEach(tile => {
                 tile.classList.remove('correct', 'incorrect');
+                tile.style.pointerEvents = 'auto'; 
             });
+            isProcessing = false;
+            playCurrentWord(); 
         }
 
         function playPreviousWord() {
+            if (completedWords === vocabWords.length) return; // Don't go back if game is over
+
             currentVocabIndex = (currentVocabIndex - 1 + vocabWords.length) % vocabWords.length;
             updateWordInfo();
             
-            // Clear feedback when changing words
             const feedback = document.getElementById('vocabFeedback');
             feedback.innerHTML = "";
             feedback.className = "feedback";
             
-            // Reset tile styles
             document.querySelectorAll('.vocab-tile').forEach(tile => {
                 tile.classList.remove('correct', 'incorrect');
+                tile.style.pointerEvents = 'auto'; 
             });
+            isProcessing = false;
+            playCurrentWord(); 
         }
 
         function updateWordInfo() {
             const wordInfo = document.getElementById('currentWordInfo');
-            wordInfo.textContent = `Word ${currentVocabIndex + 1} of ${vocabWords.length}`;
+            const audioLoadingSpan = document.getElementById('audioLoading') ? document.getElementById('audioLoading').outerHTML : '';
+            wordInfo.innerHTML = `Word ${currentVocabIndex + 1} of ${vocabWords.length} ${audioLoadingSpan}`;
         }
         
         function updateProgressBar() {
@@ -1155,71 +1191,91 @@
             document.getElementById('progressBar').style.width = `${progress}%`;
         }
 
-        function checkVocab(word) {
+        function checkVocab(clickedWord) {
             if (isProcessing) return;
             
             const vocabFeedback = document.getElementById('vocabFeedback');
             const correctWord = vocabWords[currentVocabIndex];
-            const tiles = document.querySelectorAll('.vocab-tile');
+            const allTiles = document.querySelectorAll('.vocab-tile');
+            let clickedTileElement = null;
+
+            allTiles.forEach(tile => {
+                tile.classList.remove('correct', 'incorrect'); 
+                if (tile.textContent.toLowerCase() === clickedWord.toLowerCase()) {
+                    clickedTileElement = tile;
+                }
+            });
             
-            // Reset all tiles
-            tiles.forEach(tile => tile.classList.remove('correct', 'incorrect'));
-            
-            if (word === correctWord) {
-                // Mark the correct tile
-                tiles.forEach(tile => {
-                    if (tile.textContent === correctWord.toUpperCase()) {
-                        tile.classList.add('correct');
-                    }
-                });
+            if (clickedWord === correctWord) {
+                if (clickedTileElement) {
+                    clickedTileElement.classList.add('correct');
+                }
                 
-                // Update word completion tracking
                 if (!completedWordFlags[currentVocabIndex]) {
                     completedWordFlags[currentVocabIndex] = true;
                     completedWords++;
-                    vocabScore++;
+                    vocabScore++; 
                     updateProgressBar();
+                    document.getElementById('completedWords').textContent = `${completedWords}/${vocabWords.length}`;
                 }
                 
-                correctCount++;
-                
-                vocabFeedback.innerHTML = `Correct! ${word.toUpperCase()}!`;
-                vocabFeedback.className = "feedback correct";
-                playSound('success');
-                
-                // Update UI
                 document.getElementById('vocabScore').textContent = vocabScore;
-                document.getElementById('correctCount').textContent = correctCount;
-                document.getElementById('completedWords').textContent = completedWords;
-                
-                // Prevent multiple interactions during animation
-                isProcessing = true;
-                
-                // Auto-advance after correct answer
-                setTimeout(() => {
-                    isProcessing = false;
-                    playNextWord();
-                }, 1500);
-            } else {
-                // Mark the incorrect tile
-                tiles.forEach(tile => {
-                    if (tile.textContent === word.toUpperCase()) {
-                        tile.classList.add('incorrect');
-                    }
-                });
+                isProcessing = true; 
+                allTiles.forEach(tile => tile.style.pointerEvents = 'none');
+
+                if (completedWords === vocabWords.length) {
+                    vocabFeedback.innerHTML = `Correct! ${clickedWord.toUpperCase()}! Well done!`;
+                    vocabFeedback.className = "feedback correct";
+                    playSound('success');
+                    setTimeout(() => {
+                        showVocabularySummary();
+                    }, 1500);
+                } else {
+                    vocabFeedback.innerHTML = `Correct! ${clickedWord.toUpperCase()}! Click 'Next' to continue.`;
+                    vocabFeedback.className = "feedback correct";
+                    playSound('success');
+                    // isProcessing remains true, tiles remain disabled until "Next"
+                }
+            } else { 
+                if (clickedTileElement) {
+                    clickedTileElement.classList.add('incorrect');
+                }
                 
                 vocabFeedback.innerHTML = "Try again! Listen carefully!";
                 vocabFeedback.className = "feedback incorrect";
                 playSound('error');
-                incorrectCount++;
-                document.getElementById('incorrectCount').textContent = incorrectCount;
+                
+                isProcessing = true; 
+                allTiles.forEach(tile => tile.style.pointerEvents = 'none');
+
+                setTimeout(() => {
+                    isProcessing = false;
+                    allTiles.forEach(tile => tile.style.pointerEvents = 'auto'); 
+                    if (clickedTileElement) {
+                        clickedTileElement.classList.remove('incorrect'); 
+                    }
+                }, 1500); 
             }
+        }
+
+        function showVocabularySummary() {
+            document.getElementById('audioControls').style.display = 'none';
+            document.querySelector('#vocabulary .progress-container').style.display = 'none';
+            document.getElementById('vocabTileContainer').style.display = 'none';
+            document.getElementById('vocabFeedback').style.display = 'none';
+            document.querySelector('#vocabulary .game-stats').style.display = 'none';
+            document.getElementById('vocabBackToMenuBtn').style.display = 'none';
+
+
+            const summaryDiv = document.getElementById('vocabSummary');
+            document.getElementById('vocabSummaryMessage').textContent = `Congratulations! You've completed all the words. Your final score is ${vocabScore} out of ${vocabWords.length}.`;
+            summaryDiv.style.display = 'block';
         }
 
         function playSound(type) {
             if (vocabAudios[type]) {
                 vocabAudios[type].currentTime = 0;
-                vocabAudios[type].play().catch(e => console.log(`Couldn't play ${type} sound`));
+                vocabAudios[type].play().catch(e => console.log(`Couldn't play ${type} sound: ${e}`));
             }
         }
 
@@ -1227,19 +1283,14 @@
             const volumeControl = document.getElementById('volumeControl');
             const volume = volumeControl.value;
             
-            // Update volume display
             document.getElementById('volumeValue').textContent = Math.round(volume * 100) + '%';
-            
-            // Save to localStorage
             localStorage.setItem('vocabVolume', volume);
             
-            // Apply to all audio
             Object.values(vocabAudios).forEach(audio => {
                 audio.volume = volume;
             });
         }
         
-        // Other game states
         let prepScore = 0;
         let cmdScore = 0;
     </script>
