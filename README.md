@@ -1,47 +1,50 @@
-# Bible English Fun - LOTW Lesson A1-17
+# Bible English Fun - Interactive Learning Game
 
-An interactive web-based English learning game focused on biblical vocabulary and concepts.
+**Learn English through Bible-based interactive games!**
 
-## Table of Contents
-- [Features](#features)
-- [Games Included](#games-included)
-- [Technologies Used](#technologies-used)
-- [Installation](#installation)
+## Overview
+
+Bible English Fun is an engaging web application designed to help users learn English through Bible-themed content. This project features three interactive mini-games focused on prepositions, the Ten Commandments, and vocabulary building. The application provides an immersive learning experience with audio support, drag-and-drop interactions, and instant feedback.
 
 ## Features
 
-- Three interactive English learning games
-- Audio pronunciation for vocabulary words
-- Drag-and-drop gameplay mechanics
-- Immediate feedback and scoring
-- Responsive design works on all devices
-- Biblical theme with Ten Commandments and vocabulary
+### 🎮 Three Interactive Games
+1. **Where Is It? (Prepositions Game)**
+   - Drag and drop prepositions to complete sentences
+   - 10 challenging sentences to test preposition knowledge
+   - Instant feedback and scoring system
 
-## Games Included
+2. **Ten Commandments Sort**
+   - Categorize commandments into "Love God" and "Love People"
+   - Drag-and-drop interface with visual feedback
+   - Learn biblical principles while practicing English
 
-### 1. Where Is It? (Prepositions)
-- Practice English prepositions by completing sentences
-- Drag words to fill in the blanks
-- Get instant feedback on your answers
+3. **Listen & Tap Vocabulary**
+   - Listen to words and match them to the correct tiles
+   - Navigation controls (previous, play, repeat, next)
+   - Progress tracking and statistics
+   - Volume control for optimal listening
 
-### 2. Ten Commandments Sort
-- Learn the Ten Commandments by category
-- Drag commandments to "Love God" or "Love People" baskets
-- Visual feedback for correct/incorrect placement
-
-### 3. Listen & Tap Vocabulary
-- Hear English words pronounced
-- Tap the matching vocabulary tile
-- Build listening and word recognition skills
+### ✨ Key Features
+- Responsive design that works on desktop and mobile devices
+- Audio integration with pronunciation of vocabulary words
+- Visual feedback for correct/incorrect answers
+- Score tracking across all games
+- Beautiful UI with gradients, shadows, and animations
+- Floating Bible verses for an immersive experience
+- Progress tracking in vocabulary game
 
 ## Technologies Used
 
-- HTML5
-- CSS3 (Flexbox, Grid, Animations)
-- JavaScript (Drag and Drop API, Audio API)
-- [Font Awesome](https://fontawesome.com/) icons
-- Google Dictionary pronunciation audio
+- **Frontend**: HTML5, CSS3, JavaScript
+- **Icons**: [Font Awesome](https://fontawesome.com)
+- **Audio**: Google Dictionary API, Mixkit sound effects
+- **Design**: Custom CSS with gradients, shadows, and animations
 
-## Installation
+## How to Use
 
-No installation required! This is a client-side web application that runs directly in the browser.
+1. Clone the repository or download the HTML file
+2. Open `index.html` in any modern web browser
+3. Select a game from the main menu
+4. Follow the on-screen instructions for each game
+5. Track your progress with the score system
