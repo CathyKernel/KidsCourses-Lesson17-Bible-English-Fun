@@ -610,7 +610,7 @@
         <p class="game-description">Listen to the word, then tap the matching tile!</p>
         
         <div id="audioControls">
-            <div class="word-info" id="currentWordInfo">Word 1 of 6: LAWS</div>
+            <div class="word-info" id="currentWordInfo">Word 1 of 6</div>
             
             <div class="audio-nav-container">
                 <button class="nav-btn" onclick="playPreviousWord()">
@@ -971,9 +971,8 @@
         }
 
         function updateWordInfo() {
-            const word = vocabWords[currentVocabIndex];
             const wordInfo = document.getElementById('currentWordInfo');
-            wordInfo.textContent = `Word ${currentVocabIndex + 1} of ${vocabWords.length}: ${word.toUpperCase()}`;
+            wordInfo.textContent = `Word ${currentVocabIndex + 1} of ${vocabWords.length}`;
         }
         
         function updateProgressBar() {
