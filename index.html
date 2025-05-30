@@ -718,7 +718,7 @@
         </div>
         
         <div class="game-stats">
-            <div class="stat-box">Completed: <span id="completedWords">0</span>/6</div>
+            <div class="stat-box">Completed: <span id="completedWords">0</span>/<span id="totalWords">6</span></div>
         </div>
         
         <div class="feedback" id="vocabFeedback"></div>
@@ -764,6 +764,9 @@
             updateWordInfo();
             updateProgressBar();
             
+            // Set total words count
+            document.getElementById('totalWords').textContent = vocabWords.length;
+            
             const savedVolume = localStorage.getItem('vocabVolume');
             if (savedVolume !== null) {
                 document.getElementById('volumeControl').value = savedVolume;
@@ -783,7 +786,8 @@
             }
             if (gameId === 'vocabulary') {
                 document.getElementById('vocabScore').textContent = vocabScore;
-                document.getElementById('completedWords').textContent = `${completedWords}/${vocabWords.length}`;
+                document.getElementById('completedWords').textContent = completedWords;
+                document.getElementById('totalWords').textContent = vocabWords.length;
                 updateWordInfo();
                 updateProgressBar();
 
@@ -1058,7 +1062,7 @@
             document.getElementById('vocabBackToMenuBtn').style.display = 'inline-block';
             
             document.getElementById('vocabScore').textContent = "0";
-            document.getElementById('completedWords').textContent = `0/${vocabWords.length}`;
+            document.getElementById('completedWords').textContent = "0";
             
             document.querySelectorAll('.vocab-tile').forEach(tile => {
                 tile.classList.remove('correct', 'incorrect');
@@ -1208,7 +1212,7 @@
                     completedWords++;
                     vocabScore++; 
                     updateProgressBar();
-                    document.getElementById('completedWords').textContent = `${completedWords}/${vocabWords.length}`;
+                    document.getElementById('completedWords').textContent = completedWords;
                 }
                 
                 document.getElementById('vocabScore').textContent = vocabScore;
