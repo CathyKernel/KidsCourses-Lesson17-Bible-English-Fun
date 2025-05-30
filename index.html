@@ -708,7 +708,7 @@
             <div class="progress-bar" id="progressBar"></div>
         </div>
         
-        <div id="vocabTileContainer"> <!-- Added ID here -->
+        <div id="vocabTileContainer">
             <div class="vocab-tile" onclick="checkVocab('laws')">LAWS</div>
             <div class="vocab-tile" onclick="checkVocab('love')">LOVE</div>
             <div class="vocab-tile" onclick="checkVocab('holy')">HOLY</div>
@@ -742,27 +742,24 @@
         // Vocabulary game state
         const vocabWords = ['laws', 'love', 'holy', 'land', 'help', 'Lord'];
         let currentVocabIndex = 0;
-        let vocabAudios = {};
         let isPlaying = false;
         let vocabScore = 0;
         let completedWords = 0; 
         let completedWordFlags = new Array(vocabWords.length).fill(false);
-        let isProcessing = false; 
+        let isProcessing = false;
+        let synth = window.speechSynthesis;
+        let utterance = null;
 
-        const audioFiles = {
-            'laws': 'https://ssl.gstatic.com/dictionary/static/sounds/20200429/law--_gb_1.mp3',
-            'love': 'https://ssl.gstatic.com/dictionary/static/sounds/20200429/love--_gb_1.mp3',
-            'holy': 'https://ssl.gstatic.com/dictionary/static/sounds/20200429/holy--_gb_1.mp3',
-            'land': 'https://ssl.gstatic.com/dictionary/static/sounds/20200429/land--_gb_1.mp3',
-            'help': 'https://ssl.gstatic.com/dictionary/static/sounds/20200429/help--_gb_1.mp3',
-            'Lord': 'https://ssl.gstatic.com/dictionary/static/sounds/20200429/lord--_gb_1.mp3',
+        // Predefined sounds for success and error
+        const soundFiles = {
             'success': 'https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3',
             'error': 'https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3'
         };
+        let soundAudios = {};
 
         document.addEventListener('DOMContentLoaded', function() {
             hideAllGames();
-            preloadAudio();
+            preloadSounds();
             setVolume();
             updateWordInfo();
             updateProgressBar();
@@ -790,10 +787,9 @@
                 updateWordInfo();
                 updateProgressBar();
 
-                if (completedWords === vocabWords.length && vocabWords.length > 0) { // Game was already completed
+                if (completedWords === vocabWords.length && vocabWords.length > 0) {
                     showVocabularySummary();
                 } else {
-                    // Show game elements, hide summary
                     document.getElementById('vocabSummary').style.display = 'none';
                     document.getElementById('audioControls').style.display = 'flex';
                     document.querySelector('#vocabulary .progress-container').style.display = 'block';
@@ -802,7 +798,6 @@
                     document.getElementById('vocabFeedback').innerHTML = "";
                     document.querySelector('#vocabulary .game-stats').style.display = 'flex';
                     document.getElementById('vocabBackToMenuBtn').style.display = 'inline-block';
-
 
                     document.querySelectorAll('.vocab-tile').forEach(tile => {
                         tile.style.pointerEvents = 'auto'; 
@@ -1047,10 +1042,9 @@
             completedWordFlags = new Array(vocabWords.length).fill(false);
             isProcessing = false;
             
-            Object.values(vocabAudios).forEach(audio => {
-                audio.pause();
-                audio.currentTime = 0;
-            });
+            if (utterance) {
+                synth.cancel();
+            }
 
             // Hide summary, show game elements
             document.getElementById('vocabSummary').style.display = 'none';
@@ -1077,75 +1071,74 @@
 
         function resetVocabularyAndRestart() {
             resetVocabulary();
-            // playCurrentWord(); // Optional: auto-play first word
         }
         
-        function preloadAudio() {
-            const loadingElement = document.getElementById('audioLoading');
-            loadingElement.style.display = 'block';
-            
-            let loadedCount = 0;
-            const totalCount = Object.keys(audioFiles).length;
-            
-            for (const [key, url] of Object.entries(audioFiles)) {
-                vocabAudios[key] = new Audio(url);
-                vocabAudios[key].preload = 'auto';
-                
-                vocabAudios[key].onloadeddata = function() {
-                    loadedCount++;
-                    if (loadedCount === totalCount) {
-                        loadingElement.style.display = 'none';
-                    }
-                };
-                
-                vocabAudios[key].onerror = function() {
-                    console.error('Failed to load audio: ' + url);
-                    loadedCount++;
-                    if (loadedCount === totalCount) {
-                        loadingElement.style.display = 'none';
-                    }
-                };
+        function preloadSounds() {
+            for (const [key, url] of Object.entries(soundFiles)) {
+                soundAudios[key] = new Audio(url);
+                soundAudios[key].preload = 'auto';
             }
         }
 
         function playCurrentWord(force = false) {
             const word = vocabWords[currentVocabIndex];
-            if (!vocabAudios[word]) return;
+            const playBtn = document.getElementById('playBtn');
             
             if (!isPlaying || force) {
                 isPlaying = true;
-                vocabAudios[word].currentTime = 0;
                 
-                const playBtn = document.getElementById('playBtn');
+                // Cancel any ongoing speech
+                if (synth.speaking) {
+                    synth.cancel();
+                }
+                
+                // Create and configure the utterance
+                utterance = new SpeechSynthesisUtterance(word);
+                utterance.volume = document.getElementById('volumeControl').value;
+                utterance.rate = 0.8;
+                utterance.pitch = 1.0;
+                
+                // Set language to US English
+                utterance.lang = 'en-US';
+                
+                // Find a female voice if available
+                const voices = synth.getVoices();
+                const femaleVoice = voices.find(voice => 
+                    voice.lang.includes('en') && voice.name.includes('Female')
+                );
+                
+                if (femaleVoice) {
+                    utterance.voice = femaleVoice;
+                }
+                
+                // Update button state
                 const originalHtml = playBtn.innerHTML;
-                playBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading';
+                playBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Playing';
                 playBtn.disabled = true;
                 
-                const playPromise = vocabAudios[word].play();
+                // Play the speech
+                synth.speak(utterance);
                 
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        playBtn.innerHTML = '<i class="fas fa-play"></i> Play';
-                        playBtn.disabled = false;
-                    }).catch(error => {
-                        document.getElementById('vocabFeedback').innerHTML = 
-                            "Playback failed. Click play again.";
-                        document.getElementById('vocabFeedback').className = "feedback incorrect";
-                        playBtn.innerHTML = originalHtml; 
-                        playBtn.disabled = false;
-                    }).finally(() => {
-                        isPlaying = false;
-                    });
-                } else {
+                utterance.onend = function() {
                     isPlaying = false;
-                    playBtn.innerHTML = originalHtml;
+                    playBtn.innerHTML = '<i class="fas fa-play"></i> Play';
                     playBtn.disabled = false;
-                }
+                };
+                
+                utterance.onerror = function(event) {
+                    console.error('SpeechSynthesis Error:', event);
+                    document.getElementById('vocabFeedback').innerHTML = 
+                        "Speech failed. Click play again.";
+                    document.getElementById('vocabFeedback').className = "feedback incorrect";
+                    playBtn.innerHTML = '<i class="fas fa-play"></i> Play';
+                    playBtn.disabled = false;
+                    isPlaying = false;
+                };
             }
         }
 
         function playNextWord() {
-            if (completedWords === vocabWords.length) return; // Don't advance if game is over
+            if (completedWords === vocabWords.length) return;
 
             currentVocabIndex = (currentVocabIndex + 1) % vocabWords.length;
             updateWordInfo();
@@ -1163,7 +1156,7 @@
         }
 
         function playPreviousWord() {
-            if (completedWords === vocabWords.length) return; // Don't go back if game is over
+            if (completedWords === vocabWords.length) return;
 
             currentVocabIndex = (currentVocabIndex - 1 + vocabWords.length) % vocabWords.length;
             updateWordInfo();
@@ -1182,8 +1175,7 @@
 
         function updateWordInfo() {
             const wordInfo = document.getElementById('currentWordInfo');
-            const audioLoadingSpan = document.getElementById('audioLoading') ? document.getElementById('audioLoading').outerHTML : '';
-            wordInfo.innerHTML = `Word ${currentVocabIndex + 1} of ${vocabWords.length} ${audioLoadingSpan}`;
+            wordInfo.innerHTML = `Word ${currentVocabIndex + 1} of ${vocabWords.length}`;
         }
         
         function updateProgressBar() {
@@ -1234,7 +1226,6 @@
                     vocabFeedback.innerHTML = `Correct! ${clickedWord.toUpperCase()}! Click 'Next' to continue.`;
                     vocabFeedback.className = "feedback correct";
                     playSound('success');
-                    // isProcessing remains true, tiles remain disabled until "Next"
                 }
             } else { 
                 if (clickedTileElement) {
@@ -1266,16 +1257,16 @@
             document.querySelector('#vocabulary .game-stats').style.display = 'none';
             document.getElementById('vocabBackToMenuBtn').style.display = 'none';
 
-
             const summaryDiv = document.getElementById('vocabSummary');
             document.getElementById('vocabSummaryMessage').textContent = `Congratulations! You've completed all the words. Your final score is ${vocabScore} out of ${vocabWords.length}.`;
             summaryDiv.style.display = 'block';
         }
 
         function playSound(type) {
-            if (vocabAudios[type]) {
-                vocabAudios[type].currentTime = 0;
-                vocabAudios[type].play().catch(e => console.log(`Couldn't play ${type} sound: ${e}`));
+            if (soundAudios[type]) {
+                soundAudios[type].currentTime = 0;
+                soundAudios[type].volume = document.getElementById('volumeControl').value;
+                soundAudios[type].play().catch(e => console.log(`Couldn't play ${type} sound: ${e}`));
             }
         }
 
@@ -1286,9 +1277,10 @@
             document.getElementById('volumeValue').textContent = Math.round(volume * 100) + '%';
             localStorage.setItem('vocabVolume', volume);
             
-            Object.values(vocabAudios).forEach(audio => {
-                audio.volume = volume;
-            });
+            // Set volume for speech if currently playing
+            if (utterance) {
+                utterance.volume = volume;
+            }
         }
         
         let prepScore = 0;
