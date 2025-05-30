@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bible English Fun - LOTW Lesson A1-17</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             box-sizing: border-box;
@@ -30,6 +31,8 @@
             margin-bottom: 30px;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
         }
         
         header h1 {
@@ -40,6 +43,64 @@
         header h2 {
             font-size: 1.5rem;
             font-weight: normal;
+        }
+        
+        .scripture-menu {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            padding: 15px;
+            margin: 0 auto 40px;
+            max-width: 1400px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: floatMenu 20s infinite ease-in-out;
+            position: relative;
+            z-index: 5;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes floatMenu {
+            0% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(2deg); }
+            50% { transform: translateY(0) rotate(0deg); }
+            75% { transform: translateY(10px) rotate(-2deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+
+        .scripture-item {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 15px 25px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 500;
+            text-align: center;
+            color: #1a2a6c;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s ease;
+            min-width: 280px;
+            max-width: 350px;
+            flex: 1;
+        }
+
+        .scripture-item:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 20;
+        }
+
+        .scripture-reference {
+            display: block;
+            font-size: 16px;
+            font-style: italic;
+            color: #b21f1f;
+            margin-top: 8px;
+            font-weight: bold;
         }
         
         .game-container {
@@ -475,6 +536,17 @@
                 gap: 20px;
             }
             
+            .scripture-menu {
+                gap: 15px;
+                padding: 10px;
+            }
+            
+            .scripture-item {
+                padding: 12px 15px;
+                font-size: 16px;
+                min-width: 100%;
+            }
+            
             .game-btn {
                 min-width: auto;
                 width: 100%;
@@ -523,21 +595,6 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
-        .floating-bible {
-            position: absolute;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.7);
-            animation: float 15s infinite linear;
-        }
-        
-        @keyframes float {
-            0% { transform: translateY(0) translateX(0) rotate(0deg); }
-            25% { transform: translateY(-20px) translateX(20px) rotate(5deg); }
-            50% { transform: translateY(0) translateX(40px) rotate(0deg); }
-            75% { transform: translateY(20px) translateX(20px) rotate(-5deg); }
-            100% { transform: translateY(0) translateX(0) rotate(0deg); }
-        }
-        
         .loading-spinner {
             display: inline-block;
             width: 20px;
@@ -553,21 +610,48 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        
+        .bible-icon {
+            position: absolute;
+            top: -15px;
+            right: -10px;
+            background: #8e44ad;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Floating Bible verses -->
-    <div class="floating-bible" style="top: 5%; left: 5%;">John 3:16</div>
-    <div class="floating-bible" style="top: 10%; left: 90%;">Psalm 23:1</div>
-    <div class="floating-bible" style="top: 85%; left: 15%;">Proverbs 3:5</div>
-    <div class="floating-bible" style="top: 90%; left: 80%;">Matthew 5:16</div>
-    <div class="floating-bible" style="top: 20%; left: 20%;">Philippians 4:13</div>
-    
     <header>
         <h1>Bible English Fun</h1>
         <h2>LOTW Lesson #A1-17</h2>
     </header>
+
+    <!-- Scripture Menu Bar -->
+    <div class="scripture-menu">
+        <div class="scripture-item">
+            <i class="fas fa-book-bible bible-icon"></i>
+            "For God so loved the world that he gave his one and only Son"
+            <span class="scripture-reference">John 3:16</span>
+        </div>
+        <div class="scripture-item">
+            <i class="fas fa-cross bible-icon"></i>
+            "The LORD is my shepherd; I shall not want"
+            <span class="scripture-reference">Psalm 23:1</span>
+        </div>
+        <div class="scripture-item">
+            <i class="fas fa-dove bible-icon"></i>
+            "Trust in the LORD with all your heart"
+            <span class="scripture-reference">Proverbs 3:5</span>
+        </div>
+    </div>
 
     <div id="menu">
         <div class="menu-row">
@@ -584,6 +668,10 @@
             <button class="game-btn" onclick="showGame('vocabulary')">
                 <i class="fas fa-volume-up"></i>
                 Listen & Tap Vocabulary
+            </button>
+            <button class="game-btn" onclick="showGame('verses')">
+                <i class="fas fa-book"></i>
+                Scripture Memory
             </button>
         </div>
     </div>
@@ -738,6 +826,26 @@
         <button class="nav-btn" onclick="returnToMenu()" id="vocabBackToMenuBtn"><i class="fas fa-home"></i> Back to Menu</button>
     </div>
 
+    <!-- Game 4: Scripture Memory -->
+    <div id="verses" class="game-container">
+        <div class="game-header">
+            <h2 class="game-title">Scripture Memory Challenge</h2>
+            <div class="game-score">Score: <span id="verseScore">0</span>/3</div>
+        </div>
+        <p class="game-description">Complete these famous Bible verses by filling in the blanks!</p>
+        
+        <div style="margin: 25px; text-align: left; font-size: 20px; line-height: 1.8;">
+            <p>1. "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have <input type="text" class="verse-blank" data-correct="eternal"> life." - John 3:16</p>
+            <p>2. "The LORD is my <input type="text" class="verse-blank" data-correct="shepherd">, I lack nothing." - Psalm 23:1</p>
+            <p>3. "Trust in the LORD with all your <input type="text" class="verse-blank" data-correct="heart"> and lean not on your own understanding." - Proverbs 3:5</p>
+        </div>
+        
+        <div class="feedback" id="verseFeedback"></div>
+        <button class="nav-btn" onclick="checkVerses()"><i class="fas fa-check-circle"></i> Check Answers</button>
+        <button class="nav-btn" onclick="resetVerses()"><i class="fas fa-redo"></i> Reset</button>
+        <button class="nav-btn" onclick="returnToMenu()"><i class="fas fa-home"></i> Back to Menu</button>
+    </div>
+
     <script>
         // Vocabulary game state
         const vocabWords = ['laws', 'love', 'holy', 'land', 'help', 'Lord'];
@@ -810,6 +918,9 @@
                     isProcessing = false; 
                 }
             }
+            if (gameId === 'verses') {
+                document.getElementById('verseScore').textContent = verseScore;
+            }
         }
         
         function hideAllGames() {
@@ -822,6 +933,7 @@
             resetPrepositions();
             resetCommandments();
             resetVocabulary(); 
+            resetVerses();
             hideAllGames();
         }
         
@@ -1287,8 +1399,55 @@
             }
         }
         
+        function checkVerses() {
+            const blanks = document.querySelectorAll('.verse-blank');
+            let correctCount = 0;
+            
+            blanks.forEach(blank => {
+                const userAnswer = blank.value.trim().toLowerCase();
+                const correctAnswer = blank.dataset.correct.toLowerCase();
+                
+                if (userAnswer === correctAnswer) {
+                    blank.style.backgroundColor = '#e8f5e9';
+                    blank.style.border = '2px solid #4CAF50';
+                    correctCount++;
+                } else {
+                    blank.style.backgroundColor = '#ffebee';
+                    blank.style.border = '2px solid #f44336';
+                }
+            });
+            
+            const verseFeedback = document.getElementById('verseFeedback');
+            if (correctCount === blanks.length) {
+                verseFeedback.innerHTML = "Excellent! You've completed all verses correctly!";
+                verseFeedback.className = "feedback correct";
+                playSound('success');
+            } else {
+                verseFeedback.innerHTML = `You got ${correctCount} out of ${blanks.length} correct. Keep trying!`;
+                verseFeedback.className = "feedback incorrect";
+                playSound('error');
+            }
+            
+            verseScore = correctCount;
+            document.getElementById('verseScore').textContent = verseScore;
+        }
+        
+        function resetVerses() {
+            const blanks = document.querySelectorAll('.verse-blank');
+            blanks.forEach(blank => {
+                blank.value = '';
+                blank.style.backgroundColor = '';
+                blank.style.border = '';
+            });
+            document.getElementById('verseFeedback').innerHTML = "";
+            document.getElementById('verseFeedback').className = "feedback";
+            verseScore = 0;
+            document.getElementById('verseScore').textContent = verseScore;
+        }
+        
         let prepScore = 0;
         let cmdScore = 0;
+        let verseScore = 0;
     </script>
 </body>
 </html>
