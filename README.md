@@ -2,25 +2,25 @@
 
 Bible English Fun is an interactive web application designed to help users learn English through Bible-themed games. This project combines language learning with biblical education in a fun and engaging way.
 
-
 ## Features
 
-- **Interactive Games**:
-  - Prepositions Practice: Drag-and-drop game to complete sentences
-  - Ten Commandments Sort: Categorize commandments into "Love God" and "Love People"
-  - Vocabulary Challenge: Listen and match words to tiles
-  - Scripture Memory: Complete famous Bible verses
+### 📚 Scripture Menu Bar
+- Beautiful floating scripture display with full verses
+- Elegant design with subtle animations
+- Responsive layout for all screen sizes
 
-- **Scripture Menu Bar**:
-  - Beautiful floating scripture display with full verses
-  - Subtle animations and elegant design
-  - Responsive layout for all screen sizes
+### 🎮 Interactive Games
+- **Prepositions Practice**: Drag-and-drop game to complete sentences
+- **Ten Commandments Sort**: Categorize commandments into "Love God" and "Love People"
+- **Vocabulary Challenge**: Listen and match words to tiles
+- **Scripture Memory**: Complete famous Bible verses
 
-- **User Experience**:
-  - Score tracking for each game
-  - Visual feedback for correct/incorrect answers
-  - Audio feedback with success/error sounds
-  - Progress tracking for vocabulary learning
+### 🎯 Learning Features
+- Score tracking for each game
+- Visual feedback for correct/incorrect answers
+- Audio feedback with success/error sounds
+- Progress tracking for vocabulary learning
+- Text-to-speech functionality
 
 ## How to Use
 
