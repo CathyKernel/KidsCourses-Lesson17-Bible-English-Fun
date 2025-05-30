@@ -241,6 +241,20 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
         
+        .vocab-tile.correct {
+            background: radial-gradient(circle, #4CAF50, #2E7D32);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+        }
+        
+        .vocab-tile.incorrect {
+            background: radial-gradient(circle, #f44336, #c62828);
+            color: white;
+            transform: scale(0.95);
+            box-shadow: 0 0 20px rgba(244, 67, 54, 0.6);
+        }
+        
         .feedback {
             font-size: 24px;
             margin: 20px 0;
@@ -393,13 +407,42 @@
             border-radius: 10px;
             height: 15px;
             overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
         }
         
         .progress-bar {
             height: 100%;
-            background: linear-gradient(to right, #4CAF50, #8BC34A);
+            background: linear-gradient(to right, #4CAF50, #8BC34A, #4CAF50);
             width: 0%;
             transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: linear-gradient(
+                -45deg, 
+                rgba(255, 255, 255, 0.2) 25%, 
+                transparent 25%, 
+                transparent 50%, 
+                rgba(255, 255, 255, 0.2) 50%, 
+                rgba(255, 255, 255, 0.2) 75%, 
+                transparent 75%, 
+                transparent
+            );
+            background-size: 50px 50px;
+            animation: progressAnimation 2s linear infinite;
+        }
+        
+        @keyframes progressAnimation {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 50px; }
         }
         
         .game-stats {
@@ -418,6 +461,12 @@
             border-radius: 10px;
             min-width: 120px;
             box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .audio-status {
+            font-size: 14px;
+            margin-top: 5px;
+            color: #666;
         }
         
         @media (max-width: 768px) {
@@ -487,6 +536,22 @@
             50% { transform: translateY(0) translateX(40px) rotate(0deg); }
             75% { transform: translateY(20px) translateX(20px) rotate(-5deg); }
             100% { transform: translateY(0) translateX(0) rotate(0deg); }
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -562,7 +627,7 @@
         <div class="feedback" id="prepFeedback"></div>
         <button class="nav-btn" onclick="checkPrepositions()"><i class="fas fa-check-circle"></i> Check Answers</button>
         <button class="nav-btn" onclick="resetPrepositions()"><i class="fas fa-redo"></i> Reset</button>
-        <button class="nav-btn" onclick="hideAllGames()"><i class="fas fa-home"></i> Back to Menu</button>
+        <button class="nav-btn" onclick="returnToMenu()"><i class="fas fa-home"></i> Back to Menu</button>
     </div>
 
     <!-- Game 2: Commandments Sort -->
@@ -598,7 +663,7 @@
         <div class="feedback" id="cmdFeedback"></div>
         <button class="nav-btn" onclick="checkCommandments()"><i class="fas fa-check-circle"></i> Check Answers</button>
         <button class="nav-btn" onclick="resetCommandments()"><i class="fas fa-redo"></i> Reset</button>
-        <button class="nav-btn" onclick="hideAllGames()"><i class="fas fa-home"></i> Back to Menu</button>
+        <button class="nav-btn" onclick="returnToMenu()"><i class="fas fa-home"></i> Back to Menu</button>
     </div>
 
     <!-- Game 3: Vocabulary -->
@@ -610,13 +675,18 @@
         <p class="game-description">Listen to the word, then tap the matching tile!</p>
         
         <div id="audioControls">
-            <div class="word-info" id="currentWordInfo">Word 1 of 6</div>
+            <div class="word-info" id="currentWordInfo">
+                Word 1 of 6
+                <span id="audioLoading" class="audio-status" style="display:none;">
+                    <span class="loading-spinner"></span> Loading audio...
+                </span>
+            </div>
             
             <div class="audio-nav-container">
                 <button class="nav-btn" onclick="playPreviousWord()">
                     <i class="fas fa-step-backward"></i> Previous
                 </button>
-                <button class="nav-btn" onclick="playCurrentWord()">
+                <button class="nav-btn" onclick="playCurrentWord()" id="playBtn">
                     <i class="fas fa-play"></i> Play
                 </button>
                 <button class="nav-btn" onclick="playCurrentWord(true)">
@@ -630,6 +700,7 @@
             <div style="display: flex; align-items: center; gap: 10px; justify-content: center; margin-top: 15px;">
                 <i class="fas fa-volume-up fa-lg"></i>
                 <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="0.7" onchange="setVolume()">
+                <span id="volumeValue">70%</span>
             </div>
         </div>
         
@@ -649,10 +720,11 @@
         <div class="game-stats">
             <div class="stat-box">Correct: <span id="correctCount">0</span></div>
             <div class="stat-box">Incorrect: <span id="incorrectCount">0</span></div>
+            <div class="stat-box">Completed: <span id="completedWords">0</span>/6</div>
         </div>
         
         <div class="feedback" id="vocabFeedback"></div>
-        <button class="nav-btn" onclick="hideAllGames()"><i class="fas fa-home"></i> Back to Menu</button>
+        <button class="nav-btn" onclick="returnToMenu()"><i class="fas fa-home"></i> Back to Menu</button>
     </div>
 
     <script>
@@ -663,9 +735,10 @@
         let isPlaying = false;
         let correctCount = 0;
         let incorrectCount = 0;
-        let prepScore = 0;
-        let cmdScore = 0;
         let vocabScore = 0;
+        let completedWords = 0;
+        let completedWordFlags = new Array(vocabWords.length).fill(false);
+        let isProcessing = false;
 
         // Audio preloading
         const audioFiles = {
@@ -686,6 +759,13 @@
             setVolume();
             updateWordInfo();
             updateProgressBar();
+            
+            // Load volume from localStorage if available
+            const savedVolume = localStorage.getItem('vocabVolume');
+            if (savedVolume !== null) {
+                document.getElementById('volumeControl').value = savedVolume;
+                setVolume();
+            }
         });
 
         function showGame(gameId) {
@@ -693,11 +773,9 @@
             document.getElementById(gameId).style.display = 'block';
             
             if (gameId === 'prepositions') {
-                resetPrepositions();
                 document.getElementById('prepScore').textContent = prepScore;
             }
             if (gameId === 'commandments') {
-                resetCommandments();
                 document.getElementById('cmdScore').textContent = cmdScore;
             }
             if (gameId === 'vocabulary') {
@@ -705,6 +783,7 @@
                 document.getElementById('vocabScore').textContent = vocabScore;
                 document.getElementById('correctCount').textContent = correctCount;
                 document.getElementById('incorrectCount').textContent = incorrectCount;
+                document.getElementById('completedWords').textContent = completedWords;
                 updateWordInfo();
                 updateProgressBar();
             }
@@ -714,6 +793,14 @@
             document.querySelectorAll('.game-container').forEach(el => {
                 el.style.display = 'none';
             });
+        }
+        
+        function returnToMenu() {
+            // Reset all games when returning to menu
+            resetPrepositions();
+            resetCommandments();
+            resetVocabulary();
+            hideAllGames();
         }
         
         function allowDrop(ev) {
@@ -819,6 +906,8 @@
             });
             document.getElementById('prepFeedback').innerHTML = "";
             document.getElementById('prepFeedback').className = "feedback";
+            prepScore = 0;
+            document.getElementById('prepScore').textContent = prepScore;
         }
         
         function drop(ev) { 
@@ -910,6 +999,8 @@
             document.getElementById('cmdFeedback').innerHTML = "";
             document.getElementById('cmdFeedback').className = "feedback";
             shuffleChildren(commandmentOptionsContainer);
+            cmdScore = 0;
+            document.getElementById('cmdScore').textContent = cmdScore;
         }
 
         function shuffleChildren(parent) {
@@ -926,10 +1017,66 @@
             itemsToShuffle.forEach(child => parent.appendChild(child));
         }
         
+        function resetVocabulary() {
+            currentVocabIndex = 0;
+            correctCount = 0;
+            incorrectCount = 0;
+            vocabScore = 0;
+            completedWords = 0;
+            completedWordFlags = new Array(vocabWords.length).fill(false);
+            isProcessing = false;
+            
+            // Stop any playing audio
+            Object.values(vocabAudios).forEach(audio => {
+                audio.pause();
+                audio.currentTime = 0;
+            });
+            
+            // Clear feedback
+            const feedback = document.getElementById('vocabFeedback');
+            feedback.innerHTML = "";
+            feedback.className = "feedback";
+            
+            // Reset UI elements
+            document.getElementById('vocabScore').textContent = "0";
+            document.getElementById('correctCount').textContent = "0";
+            document.getElementById('incorrectCount').textContent = "0";
+            document.getElementById('completedWords').textContent = "0";
+            
+            // Reset tile styles
+            document.querySelectorAll('.vocab-tile').forEach(tile => {
+                tile.classList.remove('correct', 'incorrect');
+            });
+            
+            updateWordInfo();
+            updateProgressBar();
+        }
+        
         function preloadAudio() {
+            const loadingElement = document.getElementById('audioLoading');
+            loadingElement.style.display = 'block';
+            
+            let loadedCount = 0;
+            const totalCount = Object.keys(audioFiles).length;
+            
             for (const [key, url] of Object.entries(audioFiles)) {
                 vocabAudios[key] = new Audio(url);
                 vocabAudios[key].preload = 'auto';
+                
+                vocabAudios[key].onloadeddata = function() {
+                    loadedCount++;
+                    if (loadedCount === totalCount) {
+                        loadingElement.style.display = 'none';
+                    }
+                };
+                
+                vocabAudios[key].onerror = function() {
+                    console.error('Failed to load audio: ' + url);
+                    loadedCount++;
+                    if (loadedCount === totalCount) {
+                        loadingElement.style.display = 'none';
+                    }
+                };
             }
         }
 
@@ -942,13 +1089,25 @@
                 isPlaying = true;
                 vocabAudios[word].currentTime = 0;
                 
+                // Update button to show loading state
+                const playBtn = document.getElementById('playBtn');
+                const originalHtml = playBtn.innerHTML;
+                playBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading';
+                playBtn.disabled = true;
+                
                 const playPromise = vocabAudios[word].play();
                 
                 if (playPromise !== undefined) {
-                    playPromise.catch(error => {
+                    playPromise.then(() => {
+                        // Audio started successfully
+                        playBtn.innerHTML = '<i class="fas fa-play"></i> Play';
+                        playBtn.disabled = false;
+                    }).catch(error => {
                         document.getElementById('vocabFeedback').innerHTML = 
                             "Playback failed. Click play again.";
                         document.getElementById('vocabFeedback').className = "feedback incorrect";
+                        playBtn.innerHTML = originalHtml;
+                        playBtn.disabled = false;
                     }).finally(() => {
                         isPlaying = false;
                     });
@@ -959,15 +1118,31 @@
         function playNextWord() {
             currentVocabIndex = (currentVocabIndex + 1) % vocabWords.length;
             updateWordInfo();
-            updateProgressBar();
-            playCurrentWord();
+            
+            // Clear feedback when changing words
+            const feedback = document.getElementById('vocabFeedback');
+            feedback.innerHTML = "";
+            feedback.className = "feedback";
+            
+            // Reset tile styles
+            document.querySelectorAll('.vocab-tile').forEach(tile => {
+                tile.classList.remove('correct', 'incorrect');
+            });
         }
 
         function playPreviousWord() {
             currentVocabIndex = (currentVocabIndex - 1 + vocabWords.length) % vocabWords.length;
             updateWordInfo();
-            updateProgressBar();
-            playCurrentWord();
+            
+            // Clear feedback when changing words
+            const feedback = document.getElementById('vocabFeedback');
+            feedback.innerHTML = "";
+            feedback.className = "feedback";
+            
+            // Reset tile styles
+            document.querySelectorAll('.vocab-tile').forEach(tile => {
+                tile.classList.remove('correct', 'incorrect');
+            });
         }
 
         function updateWordInfo() {
@@ -976,29 +1151,63 @@
         }
         
         function updateProgressBar() {
-            const progress = ((currentVocabIndex + 1) / vocabWords.length) * 100;
+            const progress = (completedWords / vocabWords.length) * 100;
             document.getElementById('progressBar').style.width = `${progress}%`;
         }
 
         function checkVocab(word) {
+            if (isProcessing) return;
+            
             const vocabFeedback = document.getElementById('vocabFeedback');
             const correctWord = vocabWords[currentVocabIndex];
+            const tiles = document.querySelectorAll('.vocab-tile');
+            
+            // Reset all tiles
+            tiles.forEach(tile => tile.classList.remove('correct', 'incorrect'));
             
             if (word === correctWord) {
+                // Mark the correct tile
+                tiles.forEach(tile => {
+                    if (tile.textContent === correctWord.toUpperCase()) {
+                        tile.classList.add('correct');
+                    }
+                });
+                
+                // Update word completion tracking
+                if (!completedWordFlags[currentVocabIndex]) {
+                    completedWordFlags[currentVocabIndex] = true;
+                    completedWords++;
+                    vocabScore++;
+                    updateProgressBar();
+                }
+                
+                correctCount++;
+                
                 vocabFeedback.innerHTML = `Correct! ${word.toUpperCase()}!`;
                 vocabFeedback.className = "feedback correct";
                 playSound('success');
-                correctCount++;
-                vocabScore++;
+                
+                // Update UI
                 document.getElementById('vocabScore').textContent = vocabScore;
                 document.getElementById('correctCount').textContent = correctCount;
+                document.getElementById('completedWords').textContent = completedWords;
+                
+                // Prevent multiple interactions during animation
+                isProcessing = true;
                 
                 // Auto-advance after correct answer
                 setTimeout(() => {
+                    isProcessing = false;
                     playNextWord();
-                    vocabFeedback.innerHTML = "";
                 }, 1500);
             } else {
+                // Mark the incorrect tile
+                tiles.forEach(tile => {
+                    if (tile.textContent === word.toUpperCase()) {
+                        tile.classList.add('incorrect');
+                    }
+                });
+                
                 vocabFeedback.innerHTML = "Try again! Listen carefully!";
                 vocabFeedback.className = "feedback incorrect";
                 playSound('error');
@@ -1015,11 +1224,24 @@
         }
 
         function setVolume() {
-            const volume = document.getElementById('volumeControl').value;
+            const volumeControl = document.getElementById('volumeControl');
+            const volume = volumeControl.value;
+            
+            // Update volume display
+            document.getElementById('volumeValue').textContent = Math.round(volume * 100) + '%';
+            
+            // Save to localStorage
+            localStorage.setItem('vocabVolume', volume);
+            
+            // Apply to all audio
             Object.values(vocabAudios).forEach(audio => {
                 audio.volume = volume;
             });
         }
+        
+        // Other game states
+        let prepScore = 0;
+        let cmdScore = 0;
     </script>
 </body>
 </html>
